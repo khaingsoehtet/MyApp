@@ -1,14 +1,29 @@
 // screens/ProfileScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
 
 export default function ProfileScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
   const handleSave = () => {
-    console.log('Profile saved', { name, email });
-    navigation.navigate('Home', { userName: name });
+    if (!name || !email) {
+      Alert.alert('Error', 'Please fill out all fields');
+      return;
+    }
+
+    axios
+      .post('http://localhost:3000/api/users', { name, email })  // Update to correct URL
+      .then((response) => {
+        console.log('Profile saved', response.data);
+        Alert.alert('Success', 'Profile saved successfully');
+        navigation.navigate('Home', { userName: name });
+      })
+      .catch((error) => {
+        console.error(error);
+        Alert.alert('Error', 'Could not save profile');
+      });
   };
 
   return (
